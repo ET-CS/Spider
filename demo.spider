@@ -1,0 +1,26 @@
+# Cache files to mem
+# vars {} is only for grouping for readabilty
+# not part of the syntax. could be without.
+vars {
+    Index = Template('index.html')
+    404 = Template('404.html')
+    favicon = file('./static/favicon.ico').optimize()
+    dyn = Template('dyn.html')
+} 
+
+# generate html with random number between 1 to 10)
+dyn:
+    data = { 'number': rand(10) }
+    return dyn(data)
+
+# main loop
+main:
+    route '/': Index
+    route '/dynamic': dyn()
+    route '/favicon.ico': favicon
+    route '/img/': dir('./static/img/')
+    route '/img/*.svgz': dir('./static/img/', headers = {
+        Content-Type: image/svg+xml,
+        Content-Encoding: gzip
+    })
+    route 404: 404
